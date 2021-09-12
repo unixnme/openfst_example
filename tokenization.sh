@@ -50,3 +50,5 @@ fstcompile --isymbols=ascii.syms --osymbols=ascii.syms > input.fst << EOF
 9
 EOF
 fstcompose input.fst lexicon_opt.fst | fstproject --project_output | fstrmepsilon | fstdraw --portrait --isymbols=wotw.syms --osymbols=wotw.syms | dot -Tpdf > output.pdf
+
+gunzip -c lexicon_opt.txt.gz | fstcompile --isymbols=ascii.syms --osymbols=wotw.syms - lexicon_opt.fst
