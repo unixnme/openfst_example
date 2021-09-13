@@ -1,4 +1,5 @@
 set -xe
+export LD_LIBRARY_PATH=../instant_search/third_party/openfst-1.7.7/build/lib/fst/
 
 gunzip -c wotw.lm.gz > wotw.lm
 fstcompile --isymbols=wotw.syms --osymbols=wotw.syms wotw.lm ngram.fst
