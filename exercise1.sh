@@ -1,99 +1,90 @@
 set -xe
 
-cat << EOF > numbers.syms
+cat > nums.syms << EOF
 <epsilon> 0
-one 1
-two 2
-three 3
-four 4
-five 5
-six 6
-seven 7
-eight 8
-nine 9
-ten 10
-eleven 11
-twelve 12
-thirteen 13
-fourteen 14
-fifteen 15
-sixteen 16
-seventeen 17
-eighteen 18
-nineteen 19
-twenty 20
-thirty 30
-forty 40
-fifty 50
-sixty 60
-seventy 70
-eighty 80
-ninety 90
-hundred 100
-thousand 1000
+4 4
+42 42
+422 422
+4225 4225
 EOF
 
-cat << EOF > num2string.txt
-1 one
-11 eleven
-111 one hundred eleven
-1111 one thousand one hundred eleven
-11111 eleven thousand one hundred eleven
-111111 one hundred eleven thousand one hundred eleven
+fstcompile --isymbols=ascii.syms --osymbols=nums.syms > 4.fst << EOF
+0 1 4 4
+1
 EOF
 
-cat << EOF > create_num2string_fst.py
-import sys
-eps = "<epsilon>"
-s = 1
-for line in sys.stdin.readlines():
-    tokens = line.split()
-    print(f'0 {s} {eps} {eps}')
-    for c in tokens[0]:
-        print(f'{s} {s+1} {c} {eps}')
-        s += 1
-    print(f'{s} {s+1} <space> {eps}')
-    s += 1
-    for token in tokens[1:]:
-        print(f'{s} {s+1} {eps} {token}')
-        s += 1
-    print(s)
-    s += 1
+
+fstcompile --isymbols=ascii.syms --osymbols=nums.syms > 42.fst << EOF
+0 1 4 42
+1 2 2 <epsilon>
+2
 EOF
 
-cat num2string.txt | python3 create_num2string_fst.py | fstcompile --isymbols=ascii.syms --osymbols=numbers.syms --keep_isymbols --keep_osymbols > numbers.fst
-fstrmepsilon numbers.fst | fstdeterminize | fstclosure - numbers_opt.fst
-fstdraw --portrait numbers_opt.fst | dot -Tpdf > numbers_opt.pdf
 
-cat << EOF | fstcompile --isymbols=ascii.syms --acceptor > ex1_input.fst
-0 1 1
-1 2 <space>
-2 3 1
-3 4 1
-4 5 <space>
-5 6 1
-6 7 1
-7 8 1
-8 9 <space>
-9 10 1
-10 11 1
-11 12 1
-12 13 1
-13 14 <space>
-14 15 1
-15 16 1
-16 17 1
-17 18 1
-18 19 1
-19 20 <space>
-20 21 1
-21 22 1
-22 23 1
-23 24 1
-24 25 1
-25 26 1
-26 27 <space>
-27
+fstcompile --isymbols=ascii.syms --osymbols=nums.syms > 422.fst << EOF
+0 1 4 422
+1 2 2 <epsilon>
+2 3 2 <epsilon>
+3
 EOF
 
-fstcompose ex1_input.fst numbers_opt.fst | fstproject --project_output | fstrmepsilon | fstprint
+fstcompile --isymbols=ascii.syms --osymbols=nums.syms > 4225.fst << EOF
+0 1 4 4225
+1 2 2 <epsilon>
+2 3 2 <epsilon>
+3 4 5 <epsilon>
+4
+EOF
+
+fstunion 4.fst 42.fst | fstunion - 422.fst | fstunion - 4225.fst | fstconcat - punct.fst | fstclosure > lexicon_number.fst
+fstrmepsilon lexicon_number.fst | fstdeterminize | fstminimize > lexicon_number_opt.fst
+
+fstcompile --isymbols=nums.syms --osymbols=wotw.syms > nums2wotw.fst << EOF
+0
+0 0 4 four
+0 1 42 forty
+1 0 <epsilon> two
+0 2 422 four
+2 3 <epsilon> hundred
+3 4 <epsilon> twenty
+4 0 <epsilon> two
+0 5 4225 four
+5 6 <epsilon> thousand
+6 7 <epsilon> two
+7 8 <epsilon> hundred
+8 9 <epsilon> twenty
+9 0 <epsilon> five
+EOF
+
+fstarcsort --sort_type=olabel lexicon_number_opt.fst | fstcompose - nums2wotw.fst > lexicon_number_opt_wotw.fst
+fstunion lexicon_opt.fst lexicon_number_opt_wotw.fst | fstclosure | fstrmepsilon | fstdeterminize | fstminimize > lexicon_all_opt.fst
+
+fstcompile --isymbols=ascii.syms --osymbols=ascii.syms > ex1_input.fst << EOF
+0 1 M M
+1 2 a a
+2 3 r r
+3 4 s s
+4 5 <space> <space>
+5 6 i i
+6 7 s s
+7 8 <space> <space>
+8 9 4 4
+9 10 2 2
+10 11 2 2
+11 12 5 5
+12 13 <space> <space>
+13 14 m m
+14 15 i i
+15 16 l l
+16 17 e e
+17 18 s s
+18 19 <space> <space>
+19 20 a a
+20 21 w w
+21 22 a a
+22 23 y y
+23 24 <space> <space>
+24
+EOF
+
+fstcompose ex1_input.fst lexicon_all_opt.fst | fstprint --isymbols=ascii.syms --osymbols=wotw.syms

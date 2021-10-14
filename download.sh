@@ -14,3 +14,4 @@ for file in wotw.txt \
     fi
 done
 
+sed -i0 13,26d full_punct.txt
