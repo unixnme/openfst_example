@@ -41,19 +41,23 @@ fstrmepsilon lexicon_number.fst | fstdeterminize | fstminimize > lexicon_number_
 
 fstcompile --isymbols=nums.syms --osymbols=wotw.syms > nums2wotw.fst << EOF
 0
-0 0 4 four
+0 11 4 four
+11
 0 1 42 forty
-1 0 <epsilon> two
+1 12 <epsilon> two
+12
 0 2 422 four
 2 3 <epsilon> hundred
 3 4 <epsilon> twenty
-4 0 <epsilon> two
+4 13 <epsilon> two
+13
 0 5 4225 four
 5 6 <epsilon> thousand
 6 7 <epsilon> two
 7 8 <epsilon> hundred
 8 9 <epsilon> twenty
-9 0 <epsilon> five
+9 14 <epsilon> five
+14
 EOF
 
 fstarcsort --sort_type=olabel lexicon_number_opt.fst | fstcompose - nums2wotw.fst > lexicon_number_opt_wotw.fst
@@ -88,3 +92,4 @@ fstcompile --isymbols=ascii.syms --osymbols=ascii.syms > ex1_input.fst << EOF
 EOF
 
 fstcompose ex1_input.fst lexicon_all_opt.fst | fstprint --isymbols=ascii.syms --osymbols=wotw.syms
+
