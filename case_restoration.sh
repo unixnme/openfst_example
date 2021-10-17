@@ -14,4 +14,20 @@ fstconvert --fst_type=olabel_lookahead --save_relabel_opairs=relabel.pairs lexic
 fstrelabel --relabel_ipairs=relabel.pairs ngram.fst | fstarcsort --sort_type=ilabel > ngram_relabel.fst
 fstcompose lexicon_lookahead.fst ngram_relabel.fst > wotw.fst
 
-fstinvert full_downcase.fst | fstcompose - wotw.fst >case_restore.fst
+fstinvert full_downcase.fst | fstcompose - wotw.fst > case_restore.fst
+
+fstcompile --isymbols=ascii.syms --acceptor > marsman.fst << EOF
+0 1 m
+1 2 a
+2 3 r
+3 4 s
+4 5 <space>
+5 6 m
+6 7 a
+7 8 n
+8 9 <space>
+9
+EOF
+
+fstcompose marsman.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > prediction.pdf
+open -a Preview prediction.pdf
