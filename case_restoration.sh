@@ -29,7 +29,7 @@ fstcompile --isymbols=ascii.syms --acceptor > marsman.fst << EOF
 9
 EOF
 
-fstcompose marsman.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > prediction.pdf
+fstcompose marsman.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --push_labels | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > prediction.pdf
 open -a Preview prediction.pdf
 
 fstcompile --isymbols=ascii.syms --acceptor > just_a_second.fst << EOF
@@ -50,7 +50,7 @@ fstcompile --isymbols=ascii.syms --acceptor > just_a_second.fst << EOF
 14
 EOF
 
-fstcompose just_a_second.fst case_restore.fst | fstshortestpath | fstrmepsilon | fstminimize --allow_nondet | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > just_a_second.pdf
+fstcompose just_a_second.fst case_restore.fst | fstshortestpath --nshortest=3 | fstrmepsilon | fstpush --push_labels --push_weights | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > just_a_second.pdf
 open -a Preview just_a_second.pdf
 
 fstcompile --isymbols=ascii.syms --acceptor > no_one.fst << EOF
@@ -64,5 +64,5 @@ fstcompile --isymbols=ascii.syms --acceptor > no_one.fst << EOF
 7
 EOF
 
-fstcompose no_one.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > no_one.pdf
+fstcompose no_one.fst case_restore.fst | fstshortestpath --nshortest=3 | fstrmepsilon | fstpush --push_labels --push_weights | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > no_one.pdf
 open -a Preview no_one.pdf
