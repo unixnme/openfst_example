@@ -31,3 +31,38 @@ EOF
 
 fstcompose marsman.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > prediction.pdf
 open -a Preview prediction.pdf
+
+fstcompile --isymbols=ascii.syms --acceptor > just_a_second.fst << EOF
+0 1 j
+1 2 u
+2 3 s
+3 4 t
+4 5 <space>
+5 6 a
+6 7 <space>
+7 8 s
+8 9 e
+9 10 c
+10 11 o
+11 12 n
+12 13 d
+13 14 <space>
+14
+EOF
+
+fstcompose just_a_second.fst case_restore.fst | fstshortestpath | fstrmepsilon | fstminimize --allow_nondet | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > just_a_second.pdf
+open -a Preview just_a_second.pdf
+
+fstcompile --isymbols=ascii.syms --acceptor > no_one.fst << EOF
+0 1 n
+1 2 o
+2 3 <space>
+3 4 o
+4 5 n
+5 6 e
+6 7 <space>
+7
+EOF
+
+fstcompose no_one.fst case_restore.fst | fstrmepsilon | fstpush --push_weights --to_final | fstdraw --portrait --isymbols=ascii.syms --osymbols=wotw.syms | dot -Tpdf > no_one.pdf
+open -a Preview no_one.pdf
